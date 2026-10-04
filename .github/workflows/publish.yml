@@ -1,0 +1,42 @@
+name: Publish release container
+on:
+  release:
+    types: [published]
+permissions:
+  contents: read
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
+      IMAGE: ghcr.io/noirprimordial7/ai-powered-market-navigator
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Verify version and allowlisted release files
+        run: python scripts/build_release.py --version "$RELEASE_TAG" --revision "$GITHUB_SHA"
+      - name: Build container
+        run: docker build --platform linux/amd64 --build-arg APP_VERSION="${RELEASE_TAG#v}" --build-arg VCS_REF="$GITHUB_SHA" -t "$IMAGE:${RELEASE_TAG#v}" -t "$IMAGE:latest" .
+      - name: Verify packaged tests and inference
+        run: docker run --rm "$IMAGE:${RELEASE_TAG#v}" python -m unittest discover -s tests -v
+      - name: Verify packaged HTTP service
+        run: |
+          docker run --detach --name northstar-smoke -p 127.0.0.1:8501:8501 "$IMAGE:${RELEASE_TAG#v}"
+          python scripts/smoke_container.py
+      - name: Remove smoke-test container
+        if: always()
+        run: docker rm --force northstar-smoke || true
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish verified image
+        run: |
+          docker push "$IMAGE:${RELEASE_TAG#v}"
+          docker push "$IMAGE:latest"
+          printf 'Published `%s:%s` and `%s:latest`\n' "$IMAGE" "${RELEASE_TAG#v}" "$IMAGE" >> "$GITHUB_STEP_SUMMARY"

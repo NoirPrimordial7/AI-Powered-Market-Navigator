@@ -6,6 +6,8 @@
 
 **[Open the live research studio ↗](https://northstar-aditya-gholap.streamlit.app/)** · Hosted on Streamlit Community Cloud.
 
+**[v1.0.0 release and downloads](https://github.com/NoirPrimordial7/AI-Powered-Market-Navigator/releases/tag/v1.0.0)** · Container: `ghcr.io/noirprimordial7/ai-powered-market-navigator:1.0.0` · [Package and integrity instructions](docs/RELEASE.md).
+
 ## Project documentation
 
 - [Model architecture, verified metadata and training recipe](docs/MODEL_CARD.md)
@@ -14,6 +16,7 @@
 - [Recovered academic project evidence](docs/RECOVERY.md)
 - [Deployment and request limits](docs/DEPLOYMENT.md)
 - [Copyright and attribution](NOTICE.md)
+- [Changelog](CHANGELOG.md) · [Releases, container use and checksums](docs/RELEASE.md)
 - [All 378 diagnostic predictions](evaluation/predictions.csv) · [metrics and input hashes](evaluation/metrics.json)
 
 ## What visitors can try
@@ -67,7 +70,7 @@ python evaluate.py
 python training.py --csv data/AAPL.csv --output training-runs/aapl-v1 --epochs 100
 ```
 
-**26 local checks pass:** actual model inference, page rendering, submitted/query-linked studies, invalid inputs, source/date handling, request bounds, news relevance/outages, scenario reproducibility, risk mathematics, shared-date comparisons, watchlist isolation, known evaluation errors, hit-rate thresholds, data-corruption detection and training-scaler leakage prevention. GitHub Actions runs these on Linux/Python 3.12 and verifies the original model hash. Cloud CI status must be checked separately from local results.
+**30 checks cover:** actual model inference, page rendering, submitted/query-linked studies, invalid inputs, source/date handling, request bounds, news relevance/outages, scenario reproducibility, risk mathematics, shared-date comparisons, watchlist isolation, known evaluation errors, hit-rate thresholds, data-corruption detection, training-scaler leakage prevention, release exclusions, credential rejection, deterministic archives and version validation. GitHub Actions runs these on Linux/Python 3.12, verifies the original model hash and builds/tests the non-root container and HTTP service. Check the linked workflow status for the current commit.
 
 Evaluation writes target-level predictions, metrics and model/input hashes. Each prediction's preprocessing sees only its observed history. Training exports a separate model, JSON scaler, learning curves, ranges, counts and test predictions to a **new** output directory. Existing artifacts are never overwritten. `prepare_data.py` manually refreshes examples and provenance; rerun evaluation when inputs change. Vendor revisions and numerical kernels can change reproduced values.
 
