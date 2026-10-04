@@ -19,3 +19,11 @@ Uploaded CSVs are held in the visitor's Streamlit session and are not written to
 `python prepare_data.py` explicitly downloads new example histories and rewrites their provenance. It never runs automatically for website visitors. Refreshing changes the evaluation inputs; rerun `python evaluate.py` and publish the new dataset hashes/results together. Do not compare reports generated on different inputs as if they were the same experiment.
 
 For a new training run, supply an OHLCV CSV with an appropriate usage license and sufficient history. The training recipe writes its input hash, chronological ranges and sample counts to `run.json`. Keep data provenance and original provider terms with every separately shared training dataset.
+
+## Verified release observations
+
+[The source audit](../evaluation/data-audit.json) checks 251 rows per symbol (1,506 total). All rows had ordered, unique, non-future dates; finite positive prices; valid high/low bounds; and nonnegative integer volume. A fresh Yahoo download for the same ranges matched every date and volume exactly, with no missing or extra dates. Currencies were USD for US symbols and INR for Indian symbols.
+
+Adjusted OHLC cells had small numerical differences, at most 0.000256 quote units. The report records both strict tolerances (relative 1e-7, absolute 1e-5) and differences exceeding 0.01 units; none exceeded 0.01. Some strict checks failed and are retained explicitly. This does not prove byte-exact prices, point-in-time adjustment validity or independent exchange correctness.
+
+Reproduce manually with `python audit_data.py`. This updates only the audit report, never the source CSVs; provider revisions can change later comparisons.

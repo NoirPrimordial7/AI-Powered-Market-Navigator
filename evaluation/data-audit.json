@@ -1,0 +1,188 @@
+{
+  "checked_at": "2026-10-04T20:14:24.132389+00:00",
+  "source": "Fresh Yahoo Finance via yfinance, explicit saved date ranges, auto_adjust=True",
+  "tolerance": "Prices: rtol=1e-7, atol=1e-5; volume and dates: exact",
+  "limitations": "Same-provider consistency check, not independent exchange verification; adjustments and vendor revisions may change historical values. Original training data remains unknown.",
+  "results": [
+    {
+      "symbol": "AAPL",
+      "dataset_sha256": "c217eca9127f72dc861dde5464a79fe5991efaee4266ced816dd6441732a57e0",
+      "rows": 251,
+      "first_date": "2025-10-03",
+      "last_date": "2026-10-02",
+      "errors": {
+        "duplicate_dates": 0,
+        "out_of_order_dates": 0,
+        "future_dates": 0,
+        "nonfinite_cells": 0,
+        "nonpositive_prices": 0,
+        "negative_volume": 0,
+        "fractional_volume": 0,
+        "invalid_high_low_rows": 0
+      },
+      "structural_checks_pass": true,
+      "provider_comparison": {
+        "common_rows": 251,
+        "saved_dates_missing_from_provider": 0,
+        "provider_dates_missing_from_saved": 0,
+        "price_cells_outside_tolerance": 0,
+        "price_cells_different_by_more_than_one_cent": 0,
+        "volume_rows_different": 0,
+        "max_price_difference": 3.214880348423321e-05,
+        "max_volume_difference": 0.0,
+        "currency": "USD",
+        "all_saved_observations_match": true
+      }
+    },
+    {
+      "symbol": "MSFT",
+      "dataset_sha256": "f7e42f98af9a2fe52858637083db59b86aa1eef58adbe29b840fe5825447846d",
+      "rows": 251,
+      "first_date": "2025-10-03",
+      "last_date": "2026-10-02",
+      "errors": {
+        "duplicate_dates": 0,
+        "out_of_order_dates": 0,
+        "future_dates": 0,
+        "nonfinite_cells": 0,
+        "nonpositive_prices": 0,
+        "negative_volume": 0,
+        "fractional_volume": 0,
+        "invalid_high_low_rows": 0
+      },
+      "structural_checks_pass": true,
+      "provider_comparison": {
+        "common_rows": 251,
+        "saved_dates_missing_from_provider": 0,
+        "provider_dates_missing_from_saved": 0,
+        "price_cells_outside_tolerance": 4,
+        "price_cells_different_by_more_than_one_cent": 0,
+        "volume_rows_different": 0,
+        "max_price_difference": 6.239186086531845e-05,
+        "max_volume_difference": 0.0,
+        "currency": "USD",
+        "all_saved_observations_match": false
+      }
+    },
+    {
+      "symbol": "NVDA",
+      "dataset_sha256": "1912fbecba02912c866497a3970cfced5ec947dc3d69624dafcfee21411b4ee3",
+      "rows": 251,
+      "first_date": "2025-10-03",
+      "last_date": "2026-10-02",
+      "errors": {
+        "duplicate_dates": 0,
+        "out_of_order_dates": 0,
+        "future_dates": 0,
+        "nonfinite_cells": 0,
+        "nonpositive_prices": 0,
+        "negative_volume": 0,
+        "fractional_volume": 0,
+        "invalid_high_low_rows": 0
+      },
+      "structural_checks_pass": true,
+      "provider_comparison": {
+        "common_rows": 251,
+        "saved_dates_missing_from_provider": 0,
+        "provider_dates_missing_from_saved": 0,
+        "price_cells_outside_tolerance": 8,
+        "price_cells_different_by_more_than_one_cent": 0,
+        "volume_rows_different": 0,
+        "max_price_difference": 3.1096429808030734e-05,
+        "max_volume_difference": 0.0,
+        "currency": "USD",
+        "all_saved_observations_match": false
+      }
+    },
+    {
+      "symbol": "RELIANCE.NS",
+      "dataset_sha256": "2ea33518a2f2c98c9fa4a377286c211a51d2a9b4f61b28a6bb7e863e0c8cd870",
+      "rows": 251,
+      "first_date": "2025-10-03",
+      "last_date": "2026-10-01",
+      "errors": {
+        "duplicate_dates": 0,
+        "out_of_order_dates": 0,
+        "future_dates": 0,
+        "nonfinite_cells": 0,
+        "nonpositive_prices": 0,
+        "negative_volume": 0,
+        "fractional_volume": 0,
+        "invalid_high_low_rows": 0
+      },
+      "structural_checks_pass": true,
+      "provider_comparison": {
+        "common_rows": 251,
+        "saved_dates_missing_from_provider": 0,
+        "provider_dates_missing_from_saved": 0,
+        "price_cells_outside_tolerance": 0,
+        "price_cells_different_by_more_than_one_cent": 0,
+        "volume_rows_different": 0,
+        "max_price_difference": 2.2737367544323206e-13,
+        "max_volume_difference": 0.0,
+        "currency": "INR",
+        "all_saved_observations_match": true
+      }
+    },
+    {
+      "symbol": "SPY",
+      "dataset_sha256": "0609b8a598b875c8b61d4ad699024a922275bc830d33111da60292dd36c8c53e",
+      "rows": 251,
+      "first_date": "2025-10-03",
+      "last_date": "2026-10-02",
+      "errors": {
+        "duplicate_dates": 0,
+        "out_of_order_dates": 0,
+        "future_dates": 0,
+        "nonfinite_cells": 0,
+        "nonpositive_prices": 0,
+        "negative_volume": 0,
+        "fractional_volume": 0,
+        "invalid_high_low_rows": 0
+      },
+      "structural_checks_pass": true,
+      "provider_comparison": {
+        "common_rows": 251,
+        "saved_dates_missing_from_provider": 0,
+        "provider_dates_missing_from_saved": 0,
+        "price_cells_outside_tolerance": 8,
+        "price_cells_different_by_more_than_one_cent": 0,
+        "volume_rows_different": 0,
+        "max_price_difference": 0.0001229379970482114,
+        "max_volume_difference": 0.0,
+        "currency": "USD",
+        "all_saved_observations_match": false
+      }
+    },
+    {
+      "symbol": "TCS.NS",
+      "dataset_sha256": "f4961073286cd077ba89d40fec311bab01aa053a37232f99cdcb2b782d422a0d",
+      "rows": 251,
+      "first_date": "2025-10-03",
+      "last_date": "2026-10-01",
+      "errors": {
+        "duplicate_dates": 0,
+        "out_of_order_dates": 0,
+        "future_dates": 0,
+        "nonfinite_cells": 0,
+        "nonpositive_prices": 0,
+        "negative_volume": 0,
+        "fractional_volume": 0,
+        "invalid_high_low_rows": 0
+      },
+      "structural_checks_pass": true,
+      "provider_comparison": {
+        "common_rows": 251,
+        "saved_dates_missing_from_provider": 0,
+        "provider_dates_missing_from_saved": 0,
+        "price_cells_outside_tolerance": 16,
+        "price_cells_different_by_more_than_one_cent": 0,
+        "volume_rows_different": 0,
+        "max_price_difference": 0.00025567251213942654,
+        "max_volume_difference": 0.0,
+        "currency": "INR",
+        "all_saved_observations_match": false
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 
 ![Project checks](https://github.com/NoirPrimordial7/AI-Powered-Market-Navigator/actions/workflows/checks.yml/badge.svg)
 
-**Deployment:** prepared for free Streamlit Community Cloud hosting. A verified public app link will be added after sign-in and successful deployment.
+**[Open the live research studio ↗](https://northstar-aditya-gholap.streamlit.app/)** · Hosted on Streamlit Community Cloud.
 
 ## Project documentation
 
@@ -33,6 +33,10 @@ The supplied `model3.h5` is preserved byte-for-byte. Its input is **30 sessions 
 The current app pipeline was evaluated on **378 rolling next-session targets**, 63 per saved symbol. Mean per-symbol absolute percentage error was **14.89% for the model**, versus **1.25% for a last-close/persistence baseline**. The model underperformed the baseline on every symbol.
 
 Original training overlap is unknown. These are **pipeline diagnostic results, not verified independent holdout scores**. MAPE is an error measure, not classification accuracy; `100 − MAPE` is not an accuracy score. No invented confidence or accuracy is displayed.
+
+On 376 non-flat moves, **direction accuracy was 51.60%**, compared with **50.27% for always predicting up** and **48.94% for repeating the last daily return**. Only **21.96%** of model price estimates were within 5% of the actual next close, versus **98.68%** for the last-close baseline. These diagnostics do not reproduce the old **81% accuracy** claim or establish useful predictive skill.
+
+All **1,506 saved OHLCV observations** passed structural checks. A fresh Yahoo download matched dates and volumes exactly; tiny price differences under 0.00026 quote units are recorded in [the source audit](evaluation/data-audit.json). This checks consistency with the same provider, not independent exchange accuracy. Reproduce with `python audit_data.py`.
 
 ![Measured error against the baseline](assets/evaluation.svg)
 

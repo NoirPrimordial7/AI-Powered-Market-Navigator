@@ -16,6 +16,16 @@ def workspace_navigation():
     const doc = window.parent.document;
     const main = doc.querySelector('[data-testid="stMain"]');
     const handler = event => {
+      const link = event.target.closest('a[href]');
+      if (event.type === 'click' && link && link.getAttribute('href').startsWith('/') &&
+          event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey &&
+          window.parent !== window.parent.top) {
+        event.preventDefault();
+        // Cloud embeds the app. A visitor's internal navigation should change
+        // the hosting page, avoiding recursively embedded hosting wrappers.
+        window.parent.top.location.href = link.href;
+        return;
+      }
       const tab = event.target.closest('[role="tab"]');
       if (!tab || (event.type === 'keyup' && !['ArrowLeft','ArrowRight','Home','End','Enter',' '].includes(event.key))) return;
       const list = tab.closest('[role="tablist"]');
@@ -55,6 +65,7 @@ def shell(active='Overview'):
 
 def footer():
     html('''<footer class="footer"><div><strong>Find your bearings.</strong>© 2026 Aditya Gholap · NoirPrimordial7 · <a href="https://github.com/NoirPrimordial7/AI-Powered-Market-Navigator" target="_blank" rel="noopener noreferrer">Code, training & results ↗</a></div><div class="legal">Independent research. Experimental estimates, historical simulations, and publisher headlines serve different purposes. Quotes may be delayed.</div></footer>''')
+    workspace_navigation()
 
 def section(number,title,description=''):
     html(f'<div class="section-intro"><div><div class="eyebrow">{escape(number)}</div><h2>{escape(title)}</h2></div><p>{escape(description)}</p></div>')

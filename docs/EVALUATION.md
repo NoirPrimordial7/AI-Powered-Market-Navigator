@@ -33,3 +33,28 @@ python -m unittest discover -s tests -v
 Run from the repository root with pinned requirements. Original model scores and original training accuracy remain unavailable. MAPE is an error metric; do not convert it to `100 − MAPE` and call that accuracy.
 
 A separate, newly defined training recipe is in [the model card](MODEL_CARD.md). Its one-epoch export smoke test is recorded separately in [training-smoke.json](training-smoke.json); it is not the preserved model’s training history.
+
+## Checking the earlier 81% claim
+
+No original metric definition, notebook or test split was recovered. The current regression model does not store a classification-accuracy metric in its compile metadata. An 81% claim therefore cannot be confirmed or compared directly. In particular, 100 minus MAPE is not an accuracy score.
+
+Across 376 non-flat next-session moves, the model got **194 correct (51.60%)**. Always predicting up got **189 correct (50.27%)**; repeating the previous daily return got **184 correct (48.94%)**. No threshold was tuned on these results. These are descriptive rates; correlated stocks/days, a small window and unknown pretraining overlap prevent an independent skill claim.
+
+| Symbol | Model direction | Always up | Repeat last return | Model price within 5% | Last close within 5% |
+|---|---:|---:|---:|---:|---:|
+| AAPL | 46.03% | 53.97% | 42.86% | 0.00% | 98.41% |
+| MSFT | 42.86% | 57.14% | 44.44% | 9.52% | 98.41% |
+| NVDA | 46.03% | 53.97% | 55.56% | 0.00% | 96.83% |
+| RELIANCE.NS | 59.68% | 46.77% | 41.94% | 100.00% | 100.00% |
+| SPY | 53.97% | 46.03% | 52.38% | 0.00% | 100.00% |
+| TCS.NS | 61.29% | 43.55% | 56.45% | 22.22% | 98.41% |
+
+The last-return baseline forecasts next close as origin close multiplied by the previous observed close-to-close ratio; it uses no target data. Always-up/down references use fixed directions. Flat target moves are excluded from direction rates; they remain in price metrics.
+
+A clearly defined price hit means absolute forecast error is at most 5% of actual close. The model hit **83/378 (21.96%)**, versus **373/378 (98.68%)** for persistence. The 5% cutoff is a descriptive tolerance, not the recovered definition of the old claim. One-percent hit rates are also in the JSON.
+
+The model's mean percentage error is about **11.92 times** the persistence error. Its current pipeline is not a reliable next-session price predictor on these histories. Missing training preprocessing, cross-symbol generalization and genuine out-of-time performance require investigation before replacing the original weights or claiming improvement.
+
+## Source-data check
+
+`python audit_data.py` validates every saved OHLCV row and compares the same date ranges with a fresh Yahoo Finance download. [The full report](../evaluation/data-audit.json) records structural checks, input hashes, exact date/volume comparisons and price differences. All 1,506 rows passed structural checks and all dates/volumes matched. The largest adjusted-price difference was under 0.00026 quote units. Some cells exceeded the strict numerical tolerance, so the report retains those differences instead of declaring a byte-exact match. This verifies same-provider consistency, not original training provenance or independent exchange records.

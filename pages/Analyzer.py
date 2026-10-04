@@ -32,7 +32,11 @@ if 'study' not in st.session_state and symbols:
     st.session_state['study']={'ticker':'AAPL' if 'AAPL' in symbols else symbols[0],'source':'Historical example','data':data,'prediction':estimate}
 
 with st.container(key='study-controls'):
-    with st.expander('Change stock, data source or upload a CSV',expanded=False):
+    edit,quick=st.columns([1,4],vertical_alignment='center')
+    with quick:
+        html('<div class="quick-radar"><span>QUICK STUDIES</span>'+''.join(f'<a href="/Analyzer?ticker={escape(symbol)}&amp;source={"saved" if symbol in symbols else "live"}" target="_self">{escape(symbol)} ↗</a>' for symbol in shortlist()[:6])+'</div>')
+    with edit,st.popover('Change study',icon=':material/tune:',width='content'):
+        html('<div class="study-editor-heading"><div class="eyebrow">YOUR RESEARCH DESK</div><h3>Set your bearings.</h3><p>Choose a market history to explore.</p></div>')
         unknown_query=bool(incoming and incoming not in symbols)
         source=st.selectbox('DATA SOURCE',['Historical example','Live market data','Upload CSV'],index=1 if unknown_query else 0,key='research_source')
         uploaded=None;upload_currency=None
@@ -58,7 +62,6 @@ with st.container(key='study-controls'):
             except Exception as exc:
                 st.error(str(exc) if isinstance(exc,ValueError) else 'This study is temporarily unavailable. Try a saved history or another ticker.')
                 st.caption('Your previous completed study remains on the desk.')
-        html('<div class="quick-radar">'+''.join(f'<a href="/Analyzer?ticker={escape(symbol)}&amp;source={"saved" if symbol in symbols else "live"}" target="_self">{escape(symbol)} ↗</a>' for symbol in shortlist()[:6])+'</div>')
 
 with st.container(key='research-workspace'):
     study=st.session_state.get('study')
@@ -86,7 +89,7 @@ with st.container(key='research-workspace'):
             plot(volume_chart(data,days),key='study_volume')
             left,right=st.columns([1.15,1],gap='medium')
             with left:
-                html(f'<aside class="model-panel"><div class="eyebrow">YOUR TRAINED MODEL / EXPERIMENTAL</div><h3>The next-session estimate.</h3><div class="model-value">{money(prediction,ticker,currency)}<span>{(prediction/float(data.Close.iloc[-1])-1)*100:+.2f}% from the last close</span></div><p>For the trading session after {data.index[-1]:%d %b %Y}. These original model weights use the app’s per-history scaling. A saved training scaler and evaluation results were not supplied.</p></aside>')
+                html(f'<aside class="model-panel"><div class="eyebrow">YOUR TRAINED MODEL / EXPERIMENTAL</div><h3>The next-session estimate.</h3><div class="model-value">{money(prediction,ticker,currency)}<span>{(prediction/float(data.Close.iloc[-1])-1)*100:+.2f}% from the last close</span></div><p>For the trading session after {data.index[-1]:%d %b %Y}. These original model weights use the app’s per-history scaling. The original training scaler is missing. View the measured rolling diagnostics in Data & model.</p></aside>')
             with right:
                 trend='Above' if data.Close.iloc[-1]>data.SMA_20.iloc[-1] else 'Below'
                 html(f'<aside class="research-note"><div class="eyebrow">THE CURRENT PICTURE</div><h3>{trend} its recent average.</h3><p>RSI is {data.RSI.iloc[-1]:.1f}. The selected window returned {stats["return"]:+.2f}%, with a maximum drawdown of {stats["drawdown"]:.2f}%. Compare these observations with the model before forming a view.</p></aside>')
@@ -144,7 +147,7 @@ with st.container(key='research-workspace'):
                     st.caption('VADER compound score from −1 to +1. This is not a price forecast.')
         with tabs[4]:
             html(f'<div class="tab-intro"><div class="eyebrow">{escape(ticker)} / {escape(source)}</div><h3>Know what sits behind every number.</h3><p>Your original model is preserved. Its required input is 30 sessions × 11 features; the app uses the latest 30 rows in the original feature order.</p></div>')
-            st.write('The model combines a bidirectional LSTM, GRU, and LSTM, with dropout and one price output. The original per-history MinMax scaling is retained. Without its saved training scaler and evaluation dataset, prediction accuracy and calibration cannot be verified. No confidence score is invented.')
+            st.write('The model combines a bidirectional LSTM, GRU, and LSTM, with dropout and one price output. The original per-history MinMax scaling is retained. The rolling diagnostics below measure the current pipeline. Original training data and its scaler were not recovered, so independent accuracy and calibration remain unverified. No confidence score is invented.')
             st.caption('Model features: Open, High, Low, Close, Volume, RSI, SMA 20, MACD, MACD signal, and upper/lower Bollinger Bands. Additional displayed indicators are not added to its input.')
             report_path=Path(__file__).resolve().parents[1]/'evaluation'/'metrics.json'
             if report_path.exists():
@@ -154,7 +157,16 @@ with st.container(key='research-workspace'):
                 results=[{'Symbol':r['symbol'],'Model MAPE %':round(r['model']['mape_percent'],2),'Last-close baseline MAPE %':round(r['persistence']['mape_percent'],2),'Direction correct %':round(r['model']['directional_accuracy_percent'],2),'Targets':r['model']['n']} for r in report['results']]
                 st.dataframe(pd.DataFrame(results),hide_index=True,width='stretch')
                 st.write(f'Mean percentage error: model {report["macro_model_mape_percent"]:.2f}% · last-close baseline {report["macro_persistence_mape_percent"]:.2f}%. The current pipeline underperforms the baseline on every evaluated symbol. Percentage error is not a classification accuracy score.')
+                if 'pooled_model_direction_percent' in report:
+                    st.write(f'Up/down direction: model {report["pooled_model_direction_percent"]:.2f}% · always predict up {report["pooled_always_up_direction_percent"]:.2f}% · repeat the last daily return {report["pooled_last_return_direction_percent"]:.2f}%, across {report["pooled_direction_targets"]} non-flat moves. These observed differences do not establish statistically reliable skill.')
+                    st.write(f'Within 5% of the actual next close: model {report["pooled_model_within_5_percent"]:.2f}% · last-close baseline {report["pooled_persistence_within_5_percent"]:.2f}% of 378 predictions. The previously reported 81% accuracy cannot be reproduced without its original metric, data and split.')
                 st.download_button('Download evaluation report ↓',report_path.read_bytes(),'northstar-evaluation.json','application/json',on_click=focus_tab,args=(names[4],))
+            audit_path=Path(__file__).resolve().parents[1]/'evaluation'/'data-audit.json'
+            if audit_path.exists():
+                audit=json.loads(audit_path.read_text(encoding='utf-8'))
+                st.markdown('**Saved-price verification**')
+                st.caption('1,506 observations checked against a fresh Yahoo Finance download. Dates and volumes matched; no structural errors. Small price differences below 0.00026 quote units were recorded. This is a same-provider consistency check, not independent exchange verification.')
+                st.download_button('Download source-data audit ↓',audit_path.read_bytes(),'northstar-data-audit.json','application/json',on_click=focus_tab,args=(names[4],))
             html('<p class="documentation-links"><a href="https://github.com/NoirPrimordial7/AI-Powered-Market-Navigator/blob/main/docs/MODEL_CARD.md" target="_blank" rel="noopener noreferrer">Model & training documentation ↗</a> · <a href="https://github.com/NoirPrimordial7/AI-Powered-Market-Navigator/blob/main/docs/EVALUATION.md" target="_blank" rel="noopener noreferrer">Test method & complete results ↗</a></p>')
             export=data.copy();export['Symbol']=ticker;export['Source']=source;export['Currency']=currency or 'Quote units'
             st.download_button('Download this research dataset ↓',export.to_csv().encode(),file_name=f'{ticker.lower()}-{data.index[-1]:%Y%m%d}.csv',mime='text/csv',on_click=focus_tab,args=(names[4],))

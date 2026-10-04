@@ -2,6 +2,11 @@ import unittest
 from evaluate import scores
 
 class EvaluationTests(unittest.TestCase):
+    def test_percentage_hit_threshold_is_inclusive(self):
+        result=scores([100,100],[105,106],[99,99])
+        self.assertEqual(result['within_5_percent'],50)
+        self.assertEqual(result['within_1_percent'],0)
+
     def test_known_errors_and_direction_abstention(self):
         result=scores([100,120],[110,110],[90,130])
         self.assertEqual(result['mae'],10)

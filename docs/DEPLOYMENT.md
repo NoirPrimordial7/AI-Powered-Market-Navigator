@@ -1,5 +1,9 @@
 # Public deployment
 
+**Live app: [northstar-aditya-gholap.streamlit.app](https://northstar-aditya-gholap.streamlit.app/)**
+
+Published and checked on 5 October 2026 using the configuration below. The repository's `main` branch supplies automatic app updates.
+
 Use Streamlit Community Cloud for this Python/TensorFlow app. A Vercel static site can later serve the portfolio and link to it; moving TensorFlow inference into Vercel requires a different service architecture. The small model can stay in this GitHub repository; Hugging Face model hosting alone does not supply an inference server for a custom Keras artifact.
 
 ## Configuration
@@ -12,7 +16,7 @@ Use Streamlit Community Cloud for this Python/TensorFlow app. A Vercel static si
 - Secrets: **none needed** for saved/live studies, uploaded CSV analysis or public publisher feeds
 - Optional sentiment: fresh credentials through Streamlit Secrets; use `.streamlit/secrets.example.toml` as a template
 
-Follow [Streamlit's deployment instructions](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy). Public app URL must be recorded after deployment succeeds and is verified; a desired subdomain is not a confirmed live URL.
+Follow [Streamlit's deployment instructions](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy) to reproduce the deployment.
 
 ## Demo limits
 
