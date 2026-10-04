@@ -69,5 +69,7 @@
     "r2": 0.8100355214541812,
     "directional_accuracy_percent": 0.0,
     "direction_n": 33
-  }
+  },
+  "published_dataset_sha256": "c217eca9127f72dc861dde5464a79fe5991efaee4266ced816dd6441732a57e0",
+  "serialization_note": "Smoke run input had Windows CRLF line endings. Published CSV is UTF-8 with LF; numeric observations are identical. Original run input hash is preserved separately."
 }
