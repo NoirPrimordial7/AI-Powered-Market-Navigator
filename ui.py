@@ -38,17 +38,15 @@ def html(content):
         from research import shortlist
         parts=urlsplit(unescape(match.group(1)))
         params=dict(parse_qsl(parts.query));params['watch']=','.join(shortlist())
-        target=urlunsplit(('', '', parts.path,urlencode(params),parts.fragment))
+        # Resolve within the current app directory, including Cloud's /~/+/
+        # prefix. Root-relative paths load another hosting wrapper in its iframe.
+        path=parts.path.lstrip('/') or './'
+        target=urlunsplit(('', '', path,urlencode(params),parts.fragment))
         return f'href="{escape(target,quote=True)}"'
     # Ordinary HTML navigation reloads Streamlit sessions. Carry the public ticker
     # shortlist across internal links, also making the watchlist bookmarkable.
     content=re.sub(r'href="(/[^\"]*)"',preserve_watchlist,content)
-    if 'href="/' in content:
-        # Our escaped navigation markup needs a normal top-level anchor on
-        # Community Cloud. st.html strips that target and nests hosting frames.
-        st.markdown(content.replace('target="_self"','target="_top"'),unsafe_allow_html=True)
-    else:
-        st.html(content)
+    st.html(content)
 
 def shell(active='Overview'):
     st.set_page_config(page_title=f'Northstar — {active}',page_icon='✳',layout='wide')
@@ -60,7 +58,6 @@ def shell(active='Overview'):
 
 def footer():
     html('''<footer class="footer"><div><strong>Find your bearings.</strong>© 2026 Aditya Gholap · NoirPrimordial7 · <a href="https://github.com/NoirPrimordial7/AI-Powered-Market-Navigator" target="_blank" rel="noopener noreferrer">Code, training & results ↗</a></div><div class="legal">Independent research. Experimental estimates, historical simulations, and publisher headlines serve different purposes. Quotes may be delayed.</div></footer>''')
-    workspace_navigation()
 
 def section(number,title,description=''):
     html(f'<div class="section-intro"><div><div class="eyebrow">{escape(number)}</div><h2>{escape(title)}</h2></div><p>{escape(description)}</p></div>')
