@@ -67,7 +67,7 @@ python evaluate.py
 python training.py --csv data/AAPL.csv --output training-runs/aapl-v1 --epochs 100
 ```
 
-**23 local checks pass:** actual model inference, page rendering, submitted/query-linked studies, invalid inputs, source/date handling, request bounds, news relevance/outages, scenario reproducibility, risk mathematics, shared-date comparisons, watchlist isolation, known evaluation errors and training-scaler leakage prevention. GitHub Actions runs these on Linux/Python 3.12 and verifies the original model hash. Cloud CI status must be checked separately from local results.
+**26 local checks pass:** actual model inference, page rendering, submitted/query-linked studies, invalid inputs, source/date handling, request bounds, news relevance/outages, scenario reproducibility, risk mathematics, shared-date comparisons, watchlist isolation, known evaluation errors, hit-rate thresholds, data-corruption detection and training-scaler leakage prevention. GitHub Actions runs these on Linux/Python 3.12 and verifies the original model hash. Cloud CI status must be checked separately from local results.
 
 Evaluation writes target-level predictions, metrics and model/input hashes. Each prediction's preprocessing sees only its observed history. Training exports a separate model, JSON scaler, learning curves, ranges, counts and test predictions to a **new** output directory. Existing artifacts are never overwritten. `prepare_data.py` manually refreshes examples and provenance; rerun evaluation when inputs change. Vendor revisions and numerical kernels can change reproduced values.
 

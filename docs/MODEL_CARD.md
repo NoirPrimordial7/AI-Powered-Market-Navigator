@@ -46,7 +46,7 @@ Consequently, the weights cannot be reproduced exactly and original training acc
 
 [The evaluation report](EVALUATION.md) compares the current pipeline with persistence over 63 next-session targets for each of six saved histories, **378 predictions**. Mean per-symbol MAPE is **14.89%** for the model and **1.25%** for persistence. Every symbol's model MAPE exceeds its baseline. These findings support keeping the model explicitly experimental; they do not establish its performance with the original scaler.
 
-No classification accuracy, confidence score, calibrated interval or causal news effect is claimed. MAPE is an error measure, not `100 − MAPE` accuracy. Poor results are reported rather than removed.
+The explicitly defined up/down direction score is **51.60%** over 376 non-flat moves, versus **50.27%** for always predicting up. Only **21.96%** of price predictions are within 5% of actual next close, versus **98.68%** for persistence. The original **81% accuracy** claim is unverified because its metric, dataset and split are missing. No calibrated confidence interval or causal news effect is claimed. MAPE is an error measure, not `100 − MAPE` accuracy. Poor results are reported rather than removed.
 
 ## A reproducible new training recipe
 
