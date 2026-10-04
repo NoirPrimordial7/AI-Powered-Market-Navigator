@@ -1,0 +1,163 @@
+{
+  "protocol": "Expanding-history, next-session rolling diagnostic of current app preprocessing",
+  "training_overlap": "UNKNOWN: original training period and dataset not recovered; this is not a verified independent holdout",
+  "model_sha256": "73d8c9649771a76c1c9f3b83dba24cba140b7ea1a349055f43f9374eea4e04c1",
+  "sessions_per_symbol": 63,
+  "baseline": "Persistence: tomorrow close = last observed close; direction abstention counts as incorrect on nonzero actual moves",
+  "scaling": "MinMax fitted separately on each available historical prefix, matching the current app; original training scaler unavailable",
+  "aggregation": "Per-symbol price errors retain local currency. Macro MAPE is an unweighted mean of per-symbol percentage errors. No pooled price-unit errors.",
+  "macro_model_mape_percent": 14.885070537700862,
+  "macro_persistence_mape_percent": 1.2488125876467455,
+  "results": [
+    {
+      "symbol": "AAPL",
+      "currency": "USD",
+      "first_target": "2026-07-07",
+      "last_target": "2026-10-02",
+      "model": {
+        "n": 63,
+        "mae": 70.37386283191977,
+        "rmse": 71.29943385081262,
+        "mape_percent": 21.742796027576482,
+        "r2": -37.33967003185846,
+        "directional_accuracy_percent": 46.03174603174603,
+        "direction_n": 63
+      },
+      "persistence": {
+        "n": 63,
+        "mae": 3.860696943979411,
+        "rmse": 5.433013809580661,
+        "mape_percent": 1.2002373398668198,
+        "r2": 0.7773832562744772,
+        "directional_accuracy_percent": 0.0,
+        "direction_n": 63
+      },
+      "dataset_sha256": "9ebed6eb49f483e53222a2f18f883361a3ad3c8ffac999b6da08f363cefa1194"
+    },
+    {
+      "symbol": "MSFT",
+      "currency": "USD",
+      "first_target": "2026-07-07",
+      "last_target": "2026-10-02",
+      "model": {
+        "n": 63,
+        "mae": 100.5253227051517,
+        "rmse": 111.58443277168229,
+        "mape_percent": 20.565666809527393,
+        "r2": -4.270964640400229,
+        "directional_accuracy_percent": 42.857142857142854,
+        "direction_n": 63
+      },
+      "persistence": {
+        "n": 63,
+        "mae": 6.780068049355152,
+        "rmse": 10.570491250869427,
+        "mape_percent": 1.4618158855791177,
+        "r2": 0.9526986838744719,
+        "directional_accuracy_percent": 0.0,
+        "direction_n": 63
+      },
+      "dataset_sha256": "b8836f7c4f0631e2517782ca421d3565b87a86a246f667c88d9af00774dd53f0"
+    },
+    {
+      "symbol": "NVDA",
+      "currency": "USD",
+      "first_target": "2026-07-07",
+      "last_target": "2026-10-02",
+      "model": {
+        "n": 63,
+        "mae": 45.40419659661435,
+        "rmse": 46.5232710770017,
+        "mape_percent": 20.87132487731041,
+        "r2": -19.38747793951338,
+        "directional_accuracy_percent": 46.03174603174603,
+        "direction_n": 63
+      },
+      "persistence": {
+        "n": 63,
+        "mae": 3.9993809291294626,
+        "rmse": 5.118027151443838,
+        "mape_percent": 1.8694145037272154,
+        "r2": 0.753266459939743,
+        "directional_accuracy_percent": 0.0,
+        "direction_n": 63
+      },
+      "dataset_sha256": "66c2473a84bc138bc7cc112fb996929ec30ddfb4f3b64b13cdde184dade4247b"
+    },
+    {
+      "symbol": "RELIANCE.NS",
+      "currency": "INR",
+      "first_target": "2026-07-07",
+      "last_target": "2026-10-01",
+      "model": {
+        "n": 63,
+        "mae": 23.702458768774374,
+        "rmse": 27.82685477933706,
+        "mape_percent": 1.8456200381432852,
+        "r2": 0.48280595417973005,
+        "directional_accuracy_percent": 59.67741935483871,
+        "direction_n": 62
+      },
+      "persistence": {
+        "n": 63,
+        "mae": 12.555559430803571,
+        "rmse": 15.628894043563285,
+        "mape_percent": 0.981458651763744,
+        "r2": 0.8368519951775832,
+        "directional_accuracy_percent": 0.0,
+        "direction_n": 62
+      },
+      "dataset_sha256": "81fd34c9d2bbeff28a083589b6532e8422df32ad6c442df7f462743b3eeee3b8"
+    },
+    {
+      "symbol": "SPY",
+      "currency": "USD",
+      "first_target": "2026-07-07",
+      "last_target": "2026-10-02",
+      "model": {
+        "n": 63,
+        "mae": 118.82252339356218,
+        "rmse": 119.33288408121894,
+        "mape_percent": 15.637775605532392,
+        "r2": -105.13967742514133,
+        "directional_accuracy_percent": 53.96825396825397,
+        "direction_n": 63
+      },
+      "persistence": {
+        "n": 63,
+        "mae": 4.135848756820437,
+        "rmse": 5.195200205690049,
+        "mape_percent": 0.546039410316767,
+        "r2": 0.7988305324312504,
+        "directional_accuracy_percent": 0.0,
+        "direction_n": 63
+      },
+      "dataset_sha256": "a685660aa5491211354a10d3a5bfab1754c254d072a581efc3b64d572dc3c220"
+    },
+    {
+      "symbol": "TCS.NS",
+      "currency": "INR",
+      "first_target": "2026-07-07",
+      "last_target": "2026-10-01",
+      "model": {
+        "n": 63,
+        "mae": 200.8403404888993,
+        "rmse": 234.5044025031045,
+        "mape_percent": 8.647239868115213,
+        "r2": -2.672008336409451,
+        "directional_accuracy_percent": 61.29032258064516,
+        "direction_n": 62
+      },
+      "persistence": {
+        "n": 63,
+        "mae": 32.658912295386905,
+        "rmse": 43.07750766270146,
+        "mape_percent": 1.433909734626809,
+        "r2": 0.8760910164560733,
+        "directional_accuracy_percent": 0.0,
+        "direction_n": 62
+      },
+      "dataset_sha256": "6b1d20438503f6774210057925242a14eadcbc6fbf430d23b036b4e59d4960df"
+    }
+  ]
+}

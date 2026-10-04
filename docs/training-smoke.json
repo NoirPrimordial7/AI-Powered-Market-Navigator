@@ -1,0 +1,73 @@
+{
+  "status": "New recipe run; NOT original model training history",
+  "seed": 42,
+  "architecture": "Clone of serialized model3.h5 architecture with fresh weights",
+  "dataset_sha256": "9ebed6eb49f483e53222a2f18f883361a3ad3c8ffac999b6da08f363cefa1194",
+  "original_model_sha256": "73d8c9649771a76c1c9f3b83dba24cba140b7ea1a349055f43f9374eea4e04c1",
+  "feature_order": [
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "RSI",
+    "SMA_20",
+    "MACD",
+    "MACD_signal",
+    "BB_upper",
+    "BB_lower"
+  ],
+  "window": 30,
+  "optimizer": "Adam lr=0.001",
+  "loss": "MSE",
+  "batch_size": 32,
+  "shuffle": false,
+  "requested_epochs": 1,
+  "completed_epochs": 1,
+  "early_stopping": "Validation loss, patience 10, restore best weights",
+  "row_ranges": {
+    "training": [
+      "2025-11-19 00:00:00",
+      "2026-06-30 00:00:00"
+    ],
+    "validation": [
+      "2026-07-01 00:00:00",
+      "2026-08-17 00:00:00"
+    ],
+    "test": [
+      "2026-08-18 00:00:00",
+      "2026-10-02 00:00:00"
+    ]
+  },
+  "sample_counts": {
+    "training": 122,
+    "validation": 33,
+    "test": 33
+  },
+  "history": {
+    "loss": [
+      0.04758782312273979
+    ],
+    "val_loss": [
+      0.0908341184258461
+    ]
+  },
+  "test_model": {
+    "n": 33,
+    "mae": 27.78365534002131,
+    "rmse": 28.84351240118127,
+    "mape_percent": 8.46563727021875,
+    "r2": -6.894272521955462,
+    "directional_accuracy_percent": 45.45454545454545,
+    "direction_n": 33
+  },
+  "test_persistence": {
+    "n": 33,
+    "mae": 3.555755615234375,
+    "rmse": 4.474332841461205,
+    "mape_percent": 1.0934545534474494,
+    "r2": 0.8100355214541812,
+    "directional_accuracy_percent": 0.0,
+    "direction_n": 33
+  }
+}

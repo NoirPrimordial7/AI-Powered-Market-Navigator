@@ -1,283 +1,127 @@
-import streamlit as st
-import yfinance as yf
-from demo1 import get_stock_data, preprocess_data, RealTimeData, generate_intelligent_reasoning
-from tensorflow.keras.models import load_model
+"""A personal session watchlist with date-aligned stock comparisons."""
+from html import escape
+from urllib.parse import quote
 import pandas as pd
-import numpy as np
+import plotly.graph_objects as go
+import streamlit as st
+from ui import shell,heading,html,footer,money,section,chart,plot,panel_header,sparkline,metric_cards,style_figure,workspace_navigation
+from market import snapshot_symbols,get_data,predict,claim_request,COMPANIES
+from research import shortlist,add_symbol,save_shortlist,aligned_prices,PERIODS
 
-# Load the pre-trained LSTM model
-model = load_model("model3.h5")
+def focus_board():st.session_state['board_tab']='Compare paths'
 
-# List of stock symbols to analyze (can be customized)
-stock_symbols = [
-    "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "INTC", "AMD", "ADBE",
-    "JPM", "BAC", "GS", "C", "WFC", "MA", "V", "PYPL", "AXP", "BLK",
-    "JNJ", "PFE", "MRK", "ABBV", "UNH", "BMY", "GILD", "AMGN", "CVS", "MDT",
-    "PG", "KO", "PEP", "NKE", "MCD", "SBUX", "COST", "WMT", "TGT", "DIS",
-    "BA", "CAT", "GE", "HON", "MMM", "UPS", "FDX", "RTX", "LMT", "DE",
-    "XOM", "CVX", "COP", "SLB", "EOG", "PSX", "VLO", "MPC", "OXY", "DVN",
-    "SPY", "QQQ", "DIA", "VTI", "IVV", "IWM", "GLD", "TLT", "EEM", "ARKK",
-    # Indian Stocks...
-    "HDFCBANK.NS", "ICICIBANK.NS", "SBIN.NS", "KOTAKBANK.NS", "AXISBANK.NS",
-    "TCS.NS", "INFY.NS", "WIPRO.NS", "HCLTECH.NS", "TECHM.NS",
-    "RELIANCE.NS", "ONGC.NS", "GAIL.NS", "IOC.NS", "BPCL.NS",
-    "SUNPHARMA.NS", "DRREDDY.NS", "CIPLA.NS", "DIVISLAB.NS", "BIOCON.NS",
-    "TATAMOTORS.NS", "MARUTI.NS", "M&M.NS", "BAJAJ-AUTO.NS", "EICHERMOT.NS",
-    "ITC.NS", "HINDUNILVR.NS", "NESTLEIND.NS", "BRITANNIA.NS", "DABUR.NS",
-    "LT.NS", "ADANIPORTS.NS", "ULTRACEMCO.NS", "ACC.NS", "JSWSTEEL.NS"
-    "HDFCBANK.NS", "ICICIBANK.NS", "SBIN.NS", "KOTAKBANK.NS", "AXISBANK.NS",
-    "INDUSINDBK.NS", "BANDHANBNK.NS", "FEDERALBNK.NS", "IDFCFIRSTB.NS",
-    "HDFCLIFE.NS", "SBILIFE.NS", "BAJFINANCE.NS", "BAJAJFINSV.NS", "CHOLAFIN.NS",
-    "MUTHOOTFIN.NS", "RECLTD.NS", "PFC.NS", "LICHSGFIN.NS",
-    
-    # Information Technology
-    "TCS.NS", "INFY.NS", "WIPRO.NS", "HCLTECH.NS", "TECHM.NS",
-    "LTIM.NS", "MPHASIS.NS", "COFORGE.NS", "PERSISTENT.NS", "OFSS.NS",
-    
-    # Oil & Gas/Energy
-    "RELIANCE.NS", "ONGC.NS", "GAIL.NS", "IOC.NS", "BPCL.NS",
-    "HINDPETRO.NS", "PETRONET.NS", "GUJGASLTD.NS", "MGL.NS",
-    "ADANIGREEN.NS", "TATAPOWER.NS", "NTPC.NS", "POWERGRID.NS",
-    
-    # Pharmaceuticals & Healthcare
-    "SUNPHARMA.NS", "DRREDDY.NS", "CIPLA.NS", "DIVISLAB.NS", "BIOCON.NS",
-    "LUPIN.NS", "AUROPHARMA.NS", "GLENMARK.NS", "TORNTPHARM.NS", "ALKEM.NS",
-    "LAURUSLABS.NS", "METROPOLIS.NS", "FORTIS.NS", "APOLLOHOSP.NS",
-    
-    # Automobiles & Ancillaries
-    "TATAMOTORS.NS", "MARUTI.NS", "M&M.NS", "BAJAJ-AUTO.NS", "EICHERMOT.NS",
-    "ASHOKLEY.NS", "BOSCHLTD.NS", "TVSMOTOR.NS", "EXIDEIND.NS", "MOTHERSON.NS",
-    "BHARATFORG.NS", "AMARAJABAT.NS", "MRF.NS", "CEAT.NS",
-    
-    # FMCG & Consumer Goods
-    "ITC.NS", "HINDUNILVR.NS", "NESTLEIND.NS", "BRITANNIA.NS", "DABUR.NS",
-    "GODREJCP.NS", "COLPAL.NS", "MARICO.NS", "RADICO.NS", "UBL.NS",
-    "TATACONSUM.NS", "EMAMILTD.NS", "BATAINDIA.NS", "VBL.NS",
-    
-    # Infrastructure & Construction
-    "LT.NS", "ADANIPORTS.NS", "ULTRACEMCO.NS", "ACC.NS", "AMBUJACEM.NS",
-    "SHREECEM.NS", "GRASIM.NS", "JSWSTEEL.NS", "TATASTEEL.NS", "SAIL.NS",
-    "HINDALCO.NS", "VEDL.NS", "JINDALSTEL.NS",
-    
-    # Chemicals & Fertilizers
-    "UPL.NS", "PIIND.NS", "SRF.NS", "TATACHEM.NS", "GNFC.NS",
-    "FACT.NS", "GSFC.NS", "DEEPAKNTR.NS", "NAVINFLUOR.NS", "AARTIIND.NS",
-    
-    # Retail & E-commerce
-    "TITAN.NS", "TRENT.NS", "V-MART.NS", "APOLLOTYRE.NS", "ZOMATO.NS",
-    "NAUKRI.NS", "JUBLFOOD.NS", "WESTLIFE.NS", "DELHIVERY.NS",
-    
-    # Specialized Sectors
-    "IRCTC.NS",      # Railways
-    "IRFC.NS",       # Railway Finance
-    "RVNL.NS",       # Rail Infrastructure
-    "HAL.NS",        # Defense
-    "BEL.NS",        # Defense Electronics
-    "NHPC.NS",       # Hydro Power
-    "SJVN.NS",       # Renewable Energy
-    "IREDA.NS",      # Renewable Energy Financing
-    "POLICYBZR.NS",  # Insurance Tech
-    "PAYTM.NS",      # Fintech
-    "AFFLE.NS",      # Mobile Marketing
-    "MAPMYINDIA.NS", # Digital Mapping
-    
-    # Emerging Companies
-    "LATENTVIEW.NS", # Analytics
-    "TANLA.NS",      # Cloud Communications
-    "CDSL.NS",       # Depository Services
-    "CAMS.NS",       # Mutual Fund Services
-    "PRIVISCL.NS",   # Plastic Products
-    "ROUTE.NS",      # Fiber Networks
-    "KAYNES.NS",     # Electronics Manufacturing
-    "DATAPATTNS.NS", # AI/ML Solutions
-    
-    # PSUs (Public Sector Undertakings)
-    "COALINDIA.NS", "NMDC.NS", "BHEL.NS", "HUDCO.NS", "NBCC.NS",
-    "GAIL.NS", "ONGC.NS", "OIL.NS", "CONCOR.NS", "STLTECH.NS",
-    
-    # International Companies (Indian Operations)
-    "HONDAPOWER.NS", # Honda
-    "SIEMENS.NS",    # Siemens India
-    "ABB.NS",        # ABB India
-    "SCHNEIDER.NS",  # Schneider Electric
-    "WHIRLPOOL.NS",  # Whirlpool India
-    "COLPAL.NS",     # Colgate-Palmolive
-    "HINDCOPPER.NS", # Hindustan Copper
-    "HSCL.NS"        # Hindustan Sanitaryware
-   
-    # United States (NYSE/NASDAQ)
-    "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA",  # Tech Giants
-    "META", "NVDA", "INTC", "AMD", "QCOM",    # Semiconductor/Social Media
-    "JPM", "BAC", "GS", "C", "MS",            # Financial Services
-    "WMT", "TGT", "COST", "HD", "LOW",        # Retail
-    "XOM", "CVX", "COP", "SLB", "EOG",        # Energy
-    "JNJ", "PFE", "MRK", "ABBV", "GILD",      # Healthcare
-    "KO", "PEP", "PG", "UL", "MO",            # Consumer Staples
-    "BA", "CAT", "HON", "MMM", "GE",          # Industrials
-    "SPY", "QQQ", "DIA", "IWM", "VOO",        # ETFs (Market Indices)
-
-    # Europe
-    ## UK (LSE)
-    "HSBA.L", "BP.L", "GSK.L", "RIO.L", "AZN.L",  # FTSE 100
-    "ULVR.L", "DGE.L", "RDSA.L", "TSCO.L", "BATS.L",
-    
-    ## Germany (XETRA)
-    "SAP.DE", "SIE.DE", "DTE.DE", "ALV.DE", "DBK.DE",  # DAX
-    "BMW.DE", "VOW3.DE", "BAS.DE", "BAYN.DE", "MRK.DE",
-    
-    ## France (Euronext Paris)
-    "AIR.PA", "TOT.PA", "SAN.PA", "BNP.PA", "MC.PA",   # CAC 40
-    "OR.PA", "UG.PA", "CAP.PA", "AI.PA", "DG.PA",
-    
-    ## Pan-European
-    "ASML.AS", "ULVR.AS", "INGA.AS",  # Netherlands
-    "NESN.SW", "ROG.SW", "NOVN.SW",   # Switzerland
-    "ENEL.MI", "ENI.MI", "STM.MI",    # Italy
-
-    # Asia-Pacific
-    ## Japan (Tokyo)
-    "7203.T", "9984.T", "9433.T", "6861.T", "9983.T",  # Toyota, SoftBank, KDDI, Keyence, Fast Retailing
-    "6758.T", "7267.T", "6954.T", "4568.T", "6098.T",  # Sony, Honda, Fanuc, Daiichi Sankyo, Recruit
-    
-    ## Hong Kong
-    "0700.HK", "9988.HK", "3690.HK", "1810.HK", "2318.HK",  # Tencent, Alibaba, Meituan, Xiaomi, Ping An
-    
-    ## China (US ADRs)
-    "BABA", "PDD", "JD", "BIDU", "TCOM",                 # E-commerce
-    "NIO", "XPEV", "LI", "BZUN", "TIGR",                 # EVs/Fintech
-    
-    ## South Korea
-    "005930.KS", "000660.KS", "035420.KS","051910.KS",  # Samsung, SK Hynix, Naver, LG Chem
-    "068270.KS", "035720.KS", "207940.KS",               # Celltrion, Kakao, SK Bioscience
-    
-    ## Australia
-    "BHP.AX", "RIO.AX", "CBA.AX", "CSL.AX", "WES.AX",    # Mining/Banking
-    "TLS.AX", "WOW.AX", "FMG.AX", "GMG.AX", "ALL.AX",    # Telstra, Woolworths, Fortescue
-
-    # Emerging Markets
-    ## Brazil
-    "VALE", "PBR", "ITUB", "BBD", "ERJ",                 # Vale, Petrobras, Itau, Banco Bradesco, Embraer
-    
-    ## Russia (US ADRs)
-    "SBRCY", "LUKOY", "OGZPY", "MTLR", "NILSY",          # Sberbank, Lukoil, Gazprom, Mechel, Nornickel
-    
-    ## South Africa
-    "NPN.JO", "BGA.JO", "ANG.JO", "SOL.JO", "MTN.JO",    # Naspers, Barclays Africa, AngloGold, Sasol, MTN
-    
-    ## Mexico
-    "AMX", "GGAL", "CX", "ASR", "VIST",                  # America Movil, Grupo Financiero, Cemex, Grupo Aeroportuario
-    
-    ## Middle East
-    "SABIC.TA", "ARAMCO.SE", "QNBK.QA", "DPW.DU",        # Saudi Basic, Saudi Aramco, Qatar National Bank, DP World
-
-    # Sector-Specific Global Leaders
-    ## Semiconductors
-    "TSM", "ASML", "AVGO", "TXN", "MU",
-    
-    ## Automotive
-    "VWAGY", "TM", "HMC", "STLA", "RACE.MI",
-    
-    ## Luxury Goods
-    "LVMUY", "CFR.SW", "KER.PA", "TIF", 
-    
-    ## Aerospace/Defense
-    "LMT", "RTX", "BA", "AIR.PA", "HEI",
-    
-    ## Renewable Energy
-    "NEE", "ENPH", "PLUG", "FSLR", "SEDG",
-    
-    ## Cryptocurrency/Blockchain
-    "COIN", "MSTR", "RIOT", "MARA", "SQ",
-    
-    ## Space Exploration
-    "SPCE", "RKLB", "ASTS", "AJRD", "MAXR",
-    
-    ## Global ETFs
-    "EEM",  # Emerging Markets
-    "VGK",  # Europe
-    "EWJ",  # Japan
-    "FXI",  # China
-    "EWZ",  # Brazil
-    "EWY",  # South Korea
-    "EWC",  # Canada
-    "EWA",  # Australia
-    "EWG",  # Germany
-    "EWU"   # UK
-    # Add more stocks as needed
-]
-
-# --- Function to Get Predictions for Multiple Stocks ---
-def get_buy_recommendations(stocks):
-    recommendations = []
-    
-    for ticker in stocks:
-        try:
-            # Fetch stock data
-            data = get_stock_data(ticker)
-            if data.empty:
-                continue  # Skip if no data is available
-
-            # Process data and get prediction
-            X, scaler, feature_columns = preprocess_data(data)
-            prediction = model.predict(X)
-            close_idx = list(feature_columns).index('Close')
-            last_row = X[0, -1, :].copy()
-            last_row[close_idx] = prediction[0, 0]
-            predicted_price = scaler.inverse_transform([last_row])[0, close_idx]
-
-            # Get current price
-            stock = yf.Ticker(ticker)
-            current_price = stock.history(period="1d")["Close"].iloc[-1]
-
-            # Calculate price difference
-            price_difference = predicted_price - current_price
-            recommendations.append({
-                "ticker": ticker,
-                "current_price": current_price,
-                "predicted_price": predicted_price,
-                "price_difference": price_difference
-            })
-        
-        except Exception as e:
-            continue  # Skip if any error occurs for a stock
-    
-    # Convert recommendations to DataFrame
-    recommendations_df = pd.DataFrame(recommendations)
-    
-    # Sort by price difference (highest predicted increase)
-    top_recommendations = recommendations_df[recommendations_df["price_difference"] > 0].sort_values(
-        by="price_difference", ascending=False
-    ).head(5)
-    
-    return top_recommendations
-
-# --- Streamlit Dashboard for "Buy Recommendations" Page ---
-# --- Streamlit Dashboard for "Buy Recommendations" Page ---
-st.set_page_config(page_title="🛒 Best Stocks to Buy", layout="wide", page_icon="💰")
-
-# Display header
-st.markdown("""
-    <h1 style='text-align: center;'>💰 Top 5 Best Stocks to Buy</h1>
-    <h4 style='text-align: center;'>Based on AI predictions and market trends</h4>
-""", unsafe_allow_html=True)
-
-# Check if recommendations already exist in session state
-if "top_buy_stocks" not in st.session_state:
-    with st.spinner("🔍 Analyzing market data..."):
-        st.session_state.top_buy_stocks = get_buy_recommendations(stock_symbols)
-
-top_buy_stocks = st.session_state.top_buy_stocks
-
-# Display results
-if not top_buy_stocks.empty:
-    st.markdown("### 🏆 Top 5 Stocks Recommended for Buying")
-    st.dataframe(
-        top_buy_stocks[['ticker', 'current_price', 'predicted_price', 'price_difference']],
-        use_container_width=True
-    )
+shell('Watchlist')
+html('<div class="workspace-label">02 / WATCHLIST <span>YOUR SHORTLIST · SHARED PERSPECTIVE</span></div>')
+symbols=shortlist();saved_symbols=snapshot_symbols()
+with st.container(key='controls'):
+    a,b,c,d=st.columns([1,1.1,1.1,1.3],vertical_alignment='bottom')
+    with a:region=st.selectbox('MARKET',['All markets','United States','India'])
+    with b:sort=st.selectbox('SORT BY',['Symbol','Last-session change','Model estimate change'])
+    with c:source=st.selectbox('PRICE SOURCE',['Saved studies','Live market data'])
+    with d:run=st.button('Compare model estimates  ↗',key='compare_models',type='primary',width='stretch')
+    st.caption('Model comparisons run on request. Live quotes are loaded separately; saved examples keep their original dates.')
+selected=[s for s in symbols if region=='All markets' or (s.endswith(('.NS','.BO')) if region=='India' else not s.endswith(('.NS','.BO')))]
+frames={}
+if source=='Saved studies':frames={s:get_data(s) for s in selected if s in saved_symbols}
 else:
-    st.info("🔍 No stocks recommended for buying at the moment.")
+    if st.button('Load live watchlist prices  ↗',key='load_watchlist',type='primary'):
+        try:
+            claim_request();loaded={};errors=[]
+            with st.spinner('Reading the watchlist…'):
+                for s in selected[:8]:
+                    try:loaded[s]=get_data(s,'Live market data')
+                    except Exception:errors.append(s)
+            st.session_state['board_live']={'frames':loaded,'errors':errors}
+        except ValueError as exc:st.warning(str(exc))
+    live=st.session_state.get('board_live',{})
+    frames={s:data for s,data in live.get('frames',{}).items() if s in selected}
+    if live.get('errors'):st.caption('Unavailable on the last request: '+', '.join(live['errors'])+'. Other completed quotes remain visible.')
 
-if st.button("🔄 Refresh Recommendations"):
-    with st.spinner("Re-analyzing..."):
-        st.session_state.top_buy_stocks = get_buy_recommendations(stock_symbols)
+estimate_key=source
+if run:
+    try:
+        if not frames:raise ValueError('Load prices before comparing the model estimates.')
+        claim_request();estimates={}
+        with st.spinner('Comparing the model estimates…'):
+            for s,data in frames.items():estimates[s]={'date':data.index[-1].isoformat(),'close':float(data.Close.iloc[-1]),'change':(predict(data)/float(data.Close.iloc[-1])-1)*100}
+        st.session_state['board_models']={'source':estimate_key,'results':estimates}
+        st.session_state['board_estimates']={s:r['change'] for s,r in estimates.items()}
+    except Exception as exc:st.error(str(exc) if isinstance(exc,ValueError) else 'The model comparison is temporarily unavailable.')
+models=st.session_state.get('board_models',{})
+estimates=models.get('results',{}) if models.get('source')==source else {}
+rows=[]
+for symbol in selected:
+    data=frames.get(symbol);estimate=None
+    if data is not None:
+        previous=estimates.get(symbol,{})
+        if previous.get('date')==data.index[-1].isoformat() and previous.get('close')==float(data.Close.iloc[-1]):estimate=previous['change']
+    rows.append({'symbol':symbol,'name':COMPANIES.get(symbol,symbol),'data':data,'estimate':estimate,
+                 'change':(float(data.Close.iloc[-1])/float(data.Close.iloc[-2])-1)*100 if data is not None else None})
+if sort=='Last-session change':rows.sort(key=lambda r:r['change'] if r['change'] is not None else -float('inf'),reverse=True)
+elif sort=='Model estimate change':
+    rows.sort(key=lambda r:r['estimate'] if r['estimate'] is not None else -float('inf'),reverse=True)
+    if not estimates:st.caption('Run the comparison to sort by model estimate change.')
+valid=[r for r in rows if r['data'] is not None]
+if valid:
+    best=max(valid,key=lambda r:r['change']);weakest=min(valid,key=lambda r:r['change'])
+    metric_cards([('On your radar',f'{len(symbols):02d} symbols','Eight-symbol session limit'),('Ready to compare',f'{len(valid):02d} studies',source),('Strongest last session',best['symbol'],f'{best["change"]:+.2f}% · dated observations'),('Weakest last session',weakest['symbol'],f'{weakest["change"]:+.2f}% · dated observations')])
+board_tabs=st.tabs(['Shortlist','Compare paths'],default=st.session_state.get('board_tab','Shortlist'))
+with board_tabs[0]:
+    with st.expander('Edit your watchlist'):
+        st.caption('Bookmark this page to keep your shortlist. Additions use live data unless a saved history is available.')
+        with st.form('add_watchlist',clear_on_submit=True):
+            a,b=st.columns([3,1],vertical_alignment='bottom')
+            with a:new_symbol=st.text_input('ADD A TICKER',placeholder='MSFT or INFY.NS',max_chars=15)
+            with b:add=st.form_submit_button('Add symbol ↗',width='stretch')
+            if add:
+                try:add_symbol(new_symbol);st.rerun()
+                except ValueError as exc:st.warning(str(exc))
+        if symbols:
+            remove=st.selectbox('REMOVE A TICKER',symbols)
+            if st.button('Remove selected',key='remove_symbol'):
+                save_shortlist([s for s in symbols if s!=remove]);st.rerun()
+    
+    st.caption('Daily observations · each stock retains its source date · trends show the last 36 sessions.')
+    if rows:
+        table=[]
+        for r in rows:
+            symbol=r['symbol'];data=r['data'];estimate='Not run' if r['estimate'] is None else f'{r["estimate"]:+.2f}%'
+            price=money(float(data.Close.iloc[-1]),symbol,data.attrs.get('currency')) if data is not None else '—'
+            change=f'{r["change"]:+.2f}%' if r['change'] is not None else '—'
+            date=data.index[-1].strftime('%d %b %Y') if data is not None else 'Load live data' if source=='Live market data' else 'Live study available'
+            study_source='live' if source=='Live market data' or symbol not in saved_symbols else 'saved'
+            table.append(f'<tr><td><div class="symbol">{escape(symbol)}</div><div class="company">{escape(r["name"])}</div></td><td class="trend-cell optional">{sparkline(data) if data is not None else "—"}</td><td class="mono">{price}</td><td class="mono session {"negative" if r["change"] is not None and r["change"]<0 else "positive"}">{change}</td><td class="mono optional">{estimate}</td><td><a class="view" href="/Analyzer?ticker={quote(symbol)}&amp;source={study_source}" target="_self">Study ↗</a><div class="company">{date}</div></td></tr>')
+        html('<table class="screen-table"><thead><tr><th>Company / ticker</th><th class="optional">Trend</th><th>Last close</th><th class="session">Session Δ</th><th class="optional">Model Δ</th><th>Explore</th></tr></thead><tbody>'+''.join(table)+'</tbody></table>')
+    else:st.info('Your shortlist is empty for this market. Add a ticker above or select another market.')
+    
+with board_tabs[1]:
+    if len(frames)>=2:
+        st.caption('Local-currency returns rebased to 100 on a shared date.')
+        a,b=st.columns([2,1])
+        with a:compare=st.multiselect('STOCKS TO COMPARE',list(frames),default=list(frames)[:3],max_selections=6,on_change=focus_board)
+        with b:period=st.selectbox('COMPARISON WINDOW',list(PERIODS),index=2,on_change=focus_board)
+        if len(compare)>=2:
+            try:
+                prices,rebased=aligned_prices({s:frames[s] for s in compare},PERIODS[period])
+                tabs=st.tabs(['Relative performance','Return correlation'])
+                with tabs[0]:
+                    colors=['#193c32','#af875f','#7899a1','#7e9268','#b47060','#817996'];fig=go.Figure()
+                    for (symbol,series),color in zip(rebased.items(),colors):fig.add_trace(go.Scatter(x=rebased.index,y=series,name=symbol,line=dict(color=color,width=2),hovertemplate='%{x|%d %b %Y}<br>Indexed close: %{y:.2f}<extra>'+symbol+'</extra>'))
+                    fig.add_hline(y=100,line_dash='dot',line_color='#b4b9ab')
+                    plot(style_figure(fig,330),key='relative_performance')
+                    st.caption(f'{len(prices)} shared dates · {prices.index[0]:%d %b %Y} — {prices.index[-1]:%d %b %Y}. Base 100. Exchange holidays reduce the shared sample; currency effects are omitted.')
+                    st.download_button('Download the aligned comparison ↓',rebased.rename_axis('Date').to_csv().encode(),'northstar-comparison.csv','text/csv')
+                with tabs[1]:
+                    returns=prices.pct_change().dropna()
+                    if len(returns)<30:st.info('At least 30 shared daily returns are needed to show a correlation matrix.')
+                    else:
+                        matrix=returns.corr()
+                        fig=go.Figure(go.Heatmap(z=matrix.to_numpy(),x=matrix.columns,y=matrix.index,zmin=-1,zmax=1,colorscale=[[0,'#c29883'],[.5,'#f5f4ee'],[1,'#39755d']],text=matrix.round(2).to_numpy(),texttemplate='%{text}',hovertemplate='%{x} / %{y}<br>Correlation: %{z:.2f}<extra></extra>',showscale=False))
+                        fig.update_layout(height=320,margin=dict(l=0,r=0,t=15,b=0),paper_bgcolor='rgba(0,0,0,0)',font=dict(family='DM Mono',color='#737970',size=11))
+                        plot(fig,key='correlation_matrix')
+                        st.caption(f'Pearson correlation of {len(returns)} shared daily percentage returns. −1 to +1; historical association does not establish causality. A constant series has no defined correlation.')
+            except ValueError as exc:st.info(str(exc))
+        else:st.caption('Select at least two stocks to compare their paths.')
+    elif source=='Live market data':st.caption('Load at least two stocks to open the comparison charts.')
+workspace_navigation()
+footer()

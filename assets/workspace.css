@@ -1,0 +1,54 @@
+/* Working views begin with the work, while the overview keeps its editorial scale. */
+.workspace-label{display:flex;justify-content:space-between;gap:12px;padding:17px 0 12px;font:10px 'DM Mono',monospace;letter-spacing:.7px;color:var(--muted)}
+.workspace-label span{font-size:8px}
+.st-key-research-workspace [role="tabpanel"]{padding-top:0!important}
+.st-key-research-workspace [data-testid="stPlotlyChart"]{padding:0}
+.documentation-links{font-size:12px;line-height:1.8;color:var(--green)}
+body:has(.workspace-label) [data-testid="stVerticalBlock"]{gap:0}
+.st-key-study-controls [data-testid="stExpanderDetails"] [data-testid="stVerticalBlock"]{gap:12px}
+.st-key-research-workspace [data-testid="stVerticalBlock"]{gap:0}
+.st-key-study-controls [data-testid="stExpander"]{margin:0 0 14px;background:#eeefe6}
+.quick-radar{display:flex;flex-wrap:wrap;gap:18px;padding:12px 0;font:11px 'DM Mono',monospace}
+.quick-radar a{color:var(--green);text-decoration:none}
+.study-title{margin-bottom:13px;align-items:center}
+.study-title h2{font-size:27px;margin:4px 0 0}
+.st-key-research-workspace .metric-grid.cards,.st-key-controls~div .metric-grid.cards{gap:0;background:#eceee4;border-radius:6px;margin-bottom:10px}
+.st-key-research-workspace .metric-grid.cards .metric-block{background:transparent;border:0;border-radius:0;padding:12px 18px;border-right:1px solid #d9ddcf}
+.st-key-research-workspace .metric-grid.cards .metric-block:last-child{border-right:0}
+.st-key-research-workspace .metric-grid.cards .value{font-size:23px;margin:5px 0 2px}
+.st-key-research-workspace .metric-grid.cards .sub{font-size:9px}
+.st-key-research-workspace [data-testid="stTabs"]{margin:0}
+.st-key-research-workspace .panel-head{padding:13px 22px 0;align-items:center}
+.st-key-research-workspace .panel-head .dark-label{display:none}
+.st-key-research-workspace .panel-title{font-size:17px;margin:0}
+.st-key-research-workspace .panel-price{margin:5px 0 0}
+.st-key-research-workspace .panel-price{font-size:28px}
+.st-key-research-workspace .source-note{padding-bottom:14px;margin-top:0}
+.st-key-research-workspace [data-testid="stExpander"]{margin:8px 0}
+.st-key-research-workspace .tab-intro{margin:12px 0 15px}
+.st-key-research-workspace .tab-intro h3{font-size:27px;margin-bottom:5px}
+.st-key-research-workspace .tab-intro p{line-height:1.5;margin-bottom:0}
+.st-key-controls{padding:12px 18px;margin-bottom:12px}
+body:has(.workspace-label) .metric-grid.cards .metric-block{padding:12px 18px}
+body:has(.workspace-label) .metric-grid.cards .value{font-size:23px;margin:5px 0 2px}
+body:has(.workspace-label) .metric-grid.cards{margin-bottom:12px}
+body:has(.workspace-label) .screen-table td{padding-top:14px;padding-bottom:14px}
+@media(max-width:700px){
+  .workspace-label span{display:none}
+  .workspace-label{padding:13px 0 9px}
+  .study-title{flex-direction:row;gap:8px}
+  .study-title h2{font-size:24px}
+  .study-date{font-size:8px;text-align:right}
+  .study-date span,.study-date strong{display:block;margin:0}
+  .st-key-research-workspace .metric-grid.cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+  .st-key-research-workspace .metric-grid.cards .metric-block{padding:10px 7px}
+  .st-key-research-workspace .metric-grid.cards .value{font-size:17px;letter-spacing:-.6px}
+  .st-key-research-workspace .metric-grid.cards .label{font-size:6px;letter-spacing:0}
+  .st-key-research-workspace .metric-grid.cards .sub{display:none}
+  .st-key-research-workspace [data-baseweb="tab-list"]{gap:15px}
+  .st-key-research-workspace [data-baseweb="tab"]{font-size:10px}
+  .st-key-research-workspace .panel-head{padding:15px 15px 0}
+  .st-key-research-workspace .panel-price{font-size:25px}
+  .st-key-research-workspace .source-note{font-size:8px;padding:0 15px 12px}
+  .st-key-controls{padding:10px}
+}

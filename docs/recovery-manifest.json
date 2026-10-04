@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-04",
+  "documents": [
+    {
+      "filename": "Annexure 3_Synopsis(AI-Powered Market Trend Analyzer).pdf",
+      "sha256": "be0fd174560a5ccacf5568436f873425025186e870ab53512a38d66f0d5e76e7",
+      "published": false,
+      "reason": "Technical evidence summarized; original document contains academic personal/administrative information"
+    },
+    {
+      "filename": "Projeact Report (AI-Powered Market Trend Analyzer).pdf",
+      "sha256": "3d838b8e15b6ed25167c8cedd2ac5bcd6b20dbe6fad52bbfd4f7b4fab532945c",
+      "published": false,
+      "reason": "Technical evidence summarized; original document contains academic personal/administrative information"
+    },
+    {
+      "filename": "Research Paper(AI-Powered Market Trend Analyzer).pdf",
+      "sha256": "08db61dd1ab13128fc251a2b22487f5ab887f3179359c13304879d1819f07fce",
+      "published": false,
+      "reason": "Technical evidence summarized; original document contains academic personal/administrative information"
+    }
+  ],
+  "original_training_notebook": "not recovered",
+  "original_training_dataset": "not recovered",
+  "original_scaler": "not recovered"
+}

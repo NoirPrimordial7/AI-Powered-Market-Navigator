@@ -1,133 +1,56 @@
+"""Overview: an editorial introduction with a real, dated market study."""
+from html import escape
 import streamlit as st
-import requests
-from streamlit_lottie import st_lottie
+from ui import shell,html,footer,section,plot,chart,panel_header,money,sparkline,metric_cards,compact
+from market import get_data,analyze,snapshot_symbols,COMPANIES
+from news import get_brief,render_brief
+from research import summary
 
-# Set page configuration
-st.set_page_config(page_title="📈 Stock Trend App", layout="wide", page_icon="📊")
+shell('Overview')
+html('''<section class="hero"><div><div class="eyebrow"><span class="status-dot"></span>Your independent research desk</div><h1>Less noise.<br><em>More perspective.</em></h1></div><div class="hero-aside"><div class="hero-index">01 — FIND YOUR BEARINGS</div><p>Follow the price. Understand the risk. Read the stories behind the movement. A considered space for your next market question.</p><a class="text-link" href="/Analyzer" target="_self">Enter the research studio <span>↗</span></a></div></section><div class="hero-bottom"><div class="capabilities"><span>PRICE & MOMENTUM</span><span>RISK & SCENARIOS</span><span>NEWS & CATALYSTS</span></div><span class="folio">NORTHSTAR / A PROJECT BY ADITYA</span></div>''')
 
-# Load Lottie animation
-def load_lottie_url(url):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
+symbols=snapshot_symbols()
+if symbols:
+    featured='AAPL' if 'AAPL' in symbols else symbols[0]
+    data=get_data(featured)
+    try:_,prediction=analyze(featured,'Historical example')
+    except Exception:prediction=None
+    stats=summary(data.tail(126))
+    html(f'<div class="desk-label"><span>ON THE DESK / {escape(featured)}</span><span>6-MONTH STUDY · THROUGH {data.index[-1]:%d %b %Y}</span></div>')
+    metric_cards([('Window return',f'{stats["return"]:+.2f}%','Across the displayed 126 sessions'),('Annualized volatility',f'{stats["volatility"]:.1f}%','Daily return variability × √252'),('Maximum drawdown',f'{stats["drawdown"]:.2f}%','Largest decline from a window peak'),('Latest volume',compact(stats['volume']),'Reported shares · latest session')])
+    left,right=st.columns([2.35,1],gap='medium')
+    with left:
+        with st.container(key='dark-chart'):
+            panel_header(featured,COMPANIES.get(featured,featured),data)
+            plot(chart(data,height=280,overlays=['SMA 20']),key='home_chart')
+            html(f'<p class="source-note">HISTORICAL STUDY · {data.tail(126).index[0]:%d %b %Y} — {data.index[-1]:%d %b %Y} · Daily closes & 20-day average · Forecast shown separately</p>')
+    with right:
+        with st.container(key='forecast'):
+            html('<div class="forecast-label"><div class="eyebrow">YOUR TRAINED MODEL / EXPERIMENTAL</div><h3>A pattern.<br>Not a promise.</h3></div>')
+            if prediction is not None:
+                change=(prediction/float(data.Close.iloc[-1])-1)*100
+                html(f'<div class="forecast-metric">{money(prediction,featured)}</div><div class="forecast-caption">{change:+.2f}% FROM THE LAST CLOSE</div>')
+            else:html('<div class="forecast-caption">Explore the price history below.</div>')
+            html(f'<div class="signal-row"><span>Momentum / RSI</span><strong>{data.RSI.iloc[-1]:.1f}</strong></div><div class="signal-row"><span>20-day trend</span><strong>{"Above average" if data.Close.iloc[-1]>data.SMA_20.iloc[-1] else "Below average"}</strong></div><div class="forecast-foot">Next-session estimate after {data.index[-1]:%d %b %Y}. Training scaler and evaluation results were not supplied.<a class="forecast-link" href="/Analyzer" target="_self">Inspect the model & signals ↗</a></div>')
+    quotes=[]
+    for symbol in symbols[:6]:
+        d=get_data(symbol);close=float(d.Close.iloc[-1]);change=(close/float(d.Close.iloc[-2])-1)*100
+        quotes.append(f'<a href="/Analyzer?ticker={escape(symbol)}" target="_self" class="quote-item"><div class="name">{escape(symbol)}<span>↗</span></div>{sparkline(d)}<div class="price">{money(close,symbol)}</div><div class="change {"negative" if change<0 else ""}">{change:+.2f}% <small>last session</small></div></a>')
+    html('<div class="quote-strip">'+''.join(quotes)+'</div>')
+    html('<p class="source-note paper" style="margin-top:9px;">SAVED HISTORICAL EXAMPLES · These are dated observations, not a live ticker.</p>')
+else:
+    html('<div class="no-data">The market study is being prepared. Open the analyzer to explore a stock with live data.</div>')
 
-# Load Lottie animation for the homepage
-lottie_chart = load_lottie_url("https://assets1.lottiefiles.com/packages/lf20_ydo1amjm.json")
-
-# Custom CSS for styling
-st.markdown("""
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: 'Arial', sans-serif;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            color: #00ccff;
-            text-align: center;
-            margin-bottom: 2rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        h2 {
-            color: #00ccff;
-            font-size: 2rem;
-            text-align: center;
-            margin-top: 1.5rem;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .card {
-            background-color: #1e1e1e;
-            border-radius: 10px;
-            padding: 2rem;
-            margin: 2rem auto;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            max-width: 800px;
-        }
-
-        .footer-tip {
-            text-align: center;
-            font-size: 1.2rem;
-            margin-top: 2rem;
-            font-style: italic;
-            color: #ffcc00;
-        }
-
-        .lottie-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# Header
-st.markdown("<h1>🏠 Welcome to the <span style='color:#00ccff;'>AI Stock Market Trend Analyzer</span></h1>", unsafe_allow_html=True)
-
-# Centered Lottie Animation
-st.markdown('<div class="lottie-container">', unsafe_allow_html=True)
-st_lottie(lottie_chart, height=300, key="home-lottie")
-st.markdown('</div>', unsafe_allow_html=True)
-
-# What You Can Do Here Section
-st.markdown("""
-<div class="card">
-    <h2>🌟 What You Can Do Here</h2>
-    <ul>
-        <li>📈 Get <b>AI-driven stock trend forecasts</b> using deep learning (LSTM)</li>
-        <li>💬 Analyze <b>sentiments</b> from Reddit and news sources in real time</li>
-        <li>📊 Explore interactive <b>financial visualizations</b> with Plotly</li>
-        <li>🔍 Perform custom <b>stock ticker analysis</b> with insightful reasoning</li>
-    </ul>
-</div>
-""", unsafe_allow_html=True)
-
-# How It Works Section
-st.markdown("""
-<div class="card">
-    <h2>🚀 How It Works</h2>
-    <ol>
-        <li>Select a stock from the sidebar menu</li>
-        <li>View AI-generated trend predictions and investment suggestions</li>
-        <li>Understand market moods with sentiment breakdowns</li>
-        <li>Use interactive charts to explore stock price patterns</li>
-    </ol>
-</div>
-""", unsafe_allow_html=True)
-
-# Tech Behind the Scenes Section
-st.markdown("""
-<div class="card">
-    <h2>🧠 Tech Behind the Scenes</h2>
-    <p>This app is powered by cutting-edge technologies:</p>
-    <ul>
-        <li>🧪 <b>Python</b>, <b>TensorFlow</b>, <b>Streamlit</b></li>
-        <li>📰 Data from <b>Yahoo Finance</b>, <b>Reddit API</b>, and <b>News APIs</b></li>
-        <li>🧠 AI Engine: <b>LSTM-based neural network</b></li>
-    </ul>
-</div>
-""", unsafe_allow_html=True)
-
-# Footer Tip
-st.markdown("""
-<div class="footer-tip">
-    📌 <b>Pro Tip:</b> Head to the<span style="color:#00ccff;">Dashboard</span> tab for real-time trend predictions and investment insights!
-</div>
-""", unsafe_allow_html=True)
-
-# Floating Action Button (For fun)
-st.markdown("""
-    <div class="fab" style="position: fixed; bottom: 30px; right: 30px; background-color: #ff4b5c; color: white; padding: 15px; border-radius: 50%; font-size: 2rem; cursor: pointer; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: transform 0.3s;">
-        🔮
-    </div>
-""", unsafe_allow_html=True)
-
-# Optional: Add functionality to the floating action button
-if st.button("Click me for a surprise!"):
-    st.balloons()  # This will show balloons when the button is clicked
-
-# End of the Streamlit app
+section('01 / THE MARKET BRIEF','The stories behind the signals.','Earnings, policy, and economic developments worth a closer look. Follow the reporting to form your own view.')
+with st.spinner('Opening the latest market headlines…'):
+    brief=get_brief()
+topics=['All developments']+list(dict.fromkeys(a['category'] for a in brief['articles']))
+topic=st.pills('News focus',topics,default='All developments',label_visibility='collapsed',key='home_news_focus')
+filtered=dict(brief,articles=[a for a in brief['articles'] if topic in (None,'All developments') or a['category']==topic])
+render_brief(filtered)
+section('02 / THE APPROACH','A little context goes a long way.','Three ways to look at the same market. One place to put them together.')
+html('''<div class="principles"><article class="principle"><span class="num">01 / OBSERVE</span><h3>Follow the pattern.</h3><p>Price, volume, and technical indicators. Begin with what the market has actually done, then inspect your model’s experimental estimate.</p></article><article class="principle"><span class="num">02 / QUESTION</span><h3>Make room for uncertainty.</h3><p>Drawdown and volatility put a move in context. Explore historical-return simulations to see how a range of paths could unfold.</p></article><article class="principle"><span class="num">03 / CONNECT</span><h3>Read beyond the chart.</h3><p>Earnings, policy, and economic developments deserve a closer look. Follow each source and compare stocks on shared trading dates.</p></article></div><div class="bottom-cta"><div class="eyebrow">YOUR RESEARCH STARTS HERE</div><h2>One ticker. A more considered view.</h2><a href="/Analyzer" target="_self">Open the studio &nbsp; ↗</a></div>''')
+with st.expander('About this research project'):
+    st.write('Market Navigator is Aditya’s independently trained stock prediction project. Its existing Streamlit app, model, technical indicators, and sentiment workflow have been brought into one consistent visual system.')
+    st.write('The forecast is experimental. No evaluation dataset, saved training scaler, or calibrated confidence score was included with the source, so the app does not advertise an accuracy or a probability.')
+footer()

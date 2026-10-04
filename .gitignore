@@ -1,0 +1,16 @@
+.venv/
+.tmp/
+.cache/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+*.h5
+!model3.h5
+training-runs/
+*.keras
+*.joblib
+*.pkl
+output/

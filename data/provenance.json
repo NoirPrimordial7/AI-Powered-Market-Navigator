@@ -1,0 +1,38 @@
+{
+  "AAPL": {
+    "source": "Yahoo Finance via yfinance",
+    "first_date": "2025-10-03",
+    "last_date": "2026-10-02",
+    "fetched_at": "2026-10-04T14:31:33.142831+00:00"
+  },
+  "MSFT": {
+    "source": "Yahoo Finance via yfinance",
+    "first_date": "2025-10-03",
+    "last_date": "2026-10-02",
+    "fetched_at": "2026-10-04T14:31:33.434453+00:00"
+  },
+  "NVDA": {
+    "source": "Yahoo Finance via yfinance",
+    "first_date": "2025-10-03",
+    "last_date": "2026-10-02",
+    "fetched_at": "2026-10-04T14:31:33.703919+00:00"
+  },
+  "SPY": {
+    "source": "Yahoo Finance via yfinance",
+    "first_date": "2025-10-03",
+    "last_date": "2026-10-02",
+    "fetched_at": "2026-10-04T14:31:34.036430+00:00"
+  },
+  "RELIANCE.NS": {
+    "source": "Yahoo Finance via yfinance",
+    "first_date": "2025-10-03",
+    "last_date": "2026-10-01",
+    "fetched_at": "2026-10-04T14:31:34.403022+00:00"
+  },
+  "TCS.NS": {
+    "source": "Yahoo Finance via yfinance",
+    "first_date": "2025-10-03",
+    "last_date": "2026-10-01",
+    "fetched_at": "2026-10-04T14:31:34.649158+00:00"
+  }
+}
