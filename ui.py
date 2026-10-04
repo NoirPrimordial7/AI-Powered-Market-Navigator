@@ -16,16 +16,6 @@ def workspace_navigation():
     const doc = window.parent.document;
     const main = doc.querySelector('[data-testid="stMain"]');
     const handler = event => {
-      const link = event.target.closest('a[href]');
-      if (event.type === 'click' && link && link.getAttribute('href').startsWith('/') &&
-          event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey &&
-          window.parent !== window.parent.top) {
-        event.preventDefault();
-        // Cloud embeds the app. A visitor's internal navigation should change
-        // the hosting page, avoiding recursively embedded hosting wrappers.
-        window.parent.top.location.href = link.href;
-        return;
-      }
       const tab = event.target.closest('[role="tab"]');
       if (!tab || (event.type === 'keyup' && !['ArrowLeft','ArrowRight','Home','End','Enter',' '].includes(event.key))) return;
       const list = tab.closest('[role="tablist"]');
@@ -53,7 +43,12 @@ def html(content):
     # Ordinary HTML navigation reloads Streamlit sessions. Carry the public ticker
     # shortlist across internal links, also making the watchlist bookmarkable.
     content=re.sub(r'href="(/[^\"]*)"',preserve_watchlist,content)
-    st.html(content)
+    if 'href="/' in content:
+        # Our escaped navigation markup needs a normal top-level anchor on
+        # Community Cloud. st.html strips that target and nests hosting frames.
+        st.markdown(content.replace('target="_self"','target="_top"'),unsafe_allow_html=True)
+    else:
+        st.html(content)
 
 def shell(active='Overview'):
     st.set_page_config(page_title=f'Northstar — {active}',page_icon='✳',layout='wide')
