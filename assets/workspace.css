@@ -11,6 +11,11 @@ body:has(.workspace-label) [data-testid="stVerticalBlock"]{gap:0}
 .study-editor-heading h3{font-size:27px;letter-spacing:-.8px;margin:8px 0}
 .study-editor-heading p{font-size:12px;color:var(--muted);margin:0 0 6px}
 .st-key-study-controls [data-testid="stPopover"] button{min-height:40px;border-color:#d2d8c8;background:#eceee4;font-size:12px;border-radius:4px}
+.st-key-study-controls [data-testid="stPopover"] button p{white-space:nowrap}
+@media(min-width:640px){
+  .st-key-study-controls [data-testid="stHorizontalBlock"]>[data-testid="stColumn"]:first-child{flex:0 0 174px!important;width:174px!important;min-width:174px!important}
+  .st-key-study-controls [data-testid="stHorizontalBlock"]>[data-testid="stColumn"]:last-child{flex:1 1 0!important;width:auto!important;min-width:0!important}
+}
 .quick-radar span{color:var(--muted);font-size:8px;letter-spacing:.5px}
 .st-key-research-workspace [data-testid="stVerticalBlock"]{gap:0}
 .st-key-study-controls [data-testid="stExpander"]{margin:0 0 14px;background:#eeefe6}
