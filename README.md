@@ -87,3 +87,7 @@ Old public source contained hardcoded credentials. This release excludes them, b
 © 2026 **Aditya Gholap · NoirPrimordial7**, for his contributions. No open-source license has been selected. Provider content and dependencies retain their respective rights. The academic project credits Ashwin Gudur, Arya Dhumal, Himank Maheshwari and Aditya Gholap under Prof. Pratik Kamble; that attribution is preserved in [NOTICE](NOTICE.md).
 
 The release combines the earlier Northstar research tools with an original editorial design inspired by the reviewed Awwwards monthly/yearly examples. Local E-drive/F-drive originals and model copies are preserved. Private administrative documents, signatures, student identifiers, email addresses and unrelated Drive files are excluded.
+
+## Contributing and questions
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, validation and contribution guidance. Use the [issue templates](https://github.com/NoirPrimordial7/AI-Powered-Market-Navigator/issues/new/choose) for reproducible bugs and focused feature proposals, or [Discussions](https://github.com/NoirPrimordial7/AI-Powered-Market-Navigator/discussions) for setup questions and explanations.
